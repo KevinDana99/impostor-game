@@ -50,16 +50,24 @@ export const [GameProvider, useGame] = createContextHook(() => {
   const setImpostorCount = useCallback((count: number) => {
     setConfig((prev) => ({ ...prev, impostorCount: count }));
   }, []);
-
+  const getRandomInt = (max: number) => {
+    const min = 0;
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  };
   const startGame = useCallback(() => {
     const wordPair = getRandomWordPair();
     const shuffledPlayers = [...config.players].sort(() => Math.random() - 0.5);
-
+    const randomIndex = getRandomInt(config.players.length - 1);
     const playersWithRoles = shuffledPlayers.map((player, index) => ({
       ...player,
-      isImpostor: index < config.impostorCount,
+      index,
+      randomIndex,
+      isImpostor: index === randomIndex,
       votes: 0,
     }));
+
+    console.log({ playersWithRoles });
 
     setConfig((prev) => ({
       ...prev,
