@@ -179,6 +179,36 @@ export default function SetupScreen() {
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Target size={24} color="#FFF" />
+                <Text style={styles.sectionTitle}>Número de rondas</Text>
+              </View>
+              <View style={styles.optionsRow}>
+                {impostorOptions.map((count) => (
+                  <TouchableOpacity
+                    key={count}
+                    style={[
+                      styles.optionButton,
+                      config.impostorCount === count &&
+                        styles.optionButtonActive,
+                    ]}
+                    onPress={() => setImpostorCount(count)}
+                    activeOpacity={0.7}
+                  >
+                    <Text
+                      style={[
+                        styles.optionText,
+                        config.impostorCount === count &&
+                          styles.optionTextActive,
+                      ]}
+                    >
+                      {count}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+            <View style={styles.section}>
+              <View style={styles.sectionHeader}>
+                <Target size={24} color="#FFF" />
                 <Text style={styles.sectionTitle}>Número de impostores</Text>
               </View>
               <View style={styles.optionsRow}>
@@ -206,7 +236,9 @@ export default function SetupScreen() {
                 ))}
               </View>
             </View>
-
+          </ScrollView>
+          <View style={styles.bottomSpacer} />
+          <View style={styles.containerStartButton}>
             <TouchableOpacity
               style={[
                 styles.startButton,
@@ -219,9 +251,7 @@ export default function SetupScreen() {
               <Play size={28} color="#FFF" fill="#FFF" />
               <Text style={styles.startButtonText}>Comenzar Juego</Text>
             </TouchableOpacity>
-
-            <View style={styles.bottomSpacer} />
-          </ScrollView>
+          </View>
         </KeyboardAvoidingView>
       </LinearGradient>
     </View>
@@ -360,7 +390,13 @@ const styles = StyleSheet.create({
   optionTextActive: {
     color: "#FFF",
   },
+  containerStartButton: {
+    position: "fixed",
+    bottom: 40,
+    padding: 24,
+  },
   startButton: {
+    position: "relative",
     backgroundColor: "#4ECDC4",
     borderRadius: 20,
     paddingVertical: 20,
@@ -368,12 +404,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 12,
-    marginTop: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 16,
-    elevation: 8,
   },
   startButtonDisabled: {
     backgroundColor: "rgba(255, 255, 255, 0.2)",

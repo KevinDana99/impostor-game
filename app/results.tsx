@@ -21,7 +21,7 @@ export default function ResultsScreen() {
   const civiliansWon = mostVoted && mostVoted.isImpostor;
 
   const handlePlayAgain = () => {
-    resetGame();
+    //resetGame();
     router.push("/setup");
   };
 
@@ -160,29 +160,28 @@ export default function ResultsScreen() {
               ))}
             </View>
           </View>
-
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={styles.playAgainButton}
-              onPress={handlePlayAgain}
-              activeOpacity={0.8}
-            >
-              <RotateCcw size={24} color="#FFF" />
-              <Text style={styles.playAgainButtonText}>Jugar de Nuevo</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.homeButton}
-              onPress={handleGoHome}
-              activeOpacity={0.8}
-            >
-              <Home size={24} color="#FFF" />
-              <Text style={styles.homeButtonText}>Menú Principal</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.bottomSpacer} />
         </ScrollView>
+
+        <View style={styles.buttonsContainer}>
+          <View style={styles.bottomSpacer} />
+          <TouchableOpacity
+            style={styles.playAgainButton}
+            onPress={handlePlayAgain}
+            activeOpacity={0.8}
+          >
+            <RotateCcw size={24} color="#FFF" />
+            <Text style={styles.playAgainButtonText}>Jugar de Nuevo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.homeButton}
+            onPress={handleGoHome}
+            activeOpacity={0.8}
+          >
+            <Home size={24} color="#FFF" />
+            <Text style={styles.homeButtonText}>Menú Principal</Text>
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
     </View>
   );
@@ -351,14 +350,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   impostorTag: {
-    backgroundColor: "rgba(255, 107, 107, 0.3)",
+    backgroundColor: "#FF6B6B",
     borderWidth: 1,
-    borderColor: "#FF6B6B",
+    borderColor: "#F4F4F4",
   },
   civilTag: {
     backgroundColor: "rgba(78, 205, 196, 0.3)",
     borderWidth: 1,
-    borderColor: "#4ECDC4",
+    borderColor: "#F4F4F4",
   },
   roleTagText: {
     fontSize: 11,
@@ -366,10 +365,10 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   impostorTagText: {
-    color: "#FF6B6B",
+    color: "#F4F4F4",
   },
   civilTagText: {
-    color: "#4ECDC4",
+    color: "#F4F4F4",
   },
   votingSection: {
     marginBottom: 32,
@@ -420,8 +419,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
   },
   buttonsContainer: {
+    position: "fixed",
     gap: 16,
     marginBottom: 20,
+    bottom: 40,
+    padding: 24,
   },
   playAgainButton: {
     backgroundColor: "rgba(255, 255, 255, 0.25)",

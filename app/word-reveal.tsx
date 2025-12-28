@@ -54,7 +54,7 @@ export default function WordRevealScreen() {
       <StatusBar barStyle="light-content" />
       <LinearGradient
         colors={
-          currentPlayer.isImpostor
+          currentPlayer.isImpostor && isRevealed
             ? ["#FF6B6B", "#EE5A6F"]
             : ["#4ECDC4", "#44A08D"]
         }
@@ -104,7 +104,13 @@ export default function WordRevealScreen() {
                 style={[styles.revealSection, { opacity: fadeAnim }]}
               >
                 <View style={styles.wordCard}>
-                  <Text style={styles.roleLabel}>
+                  <Text
+                    style={
+                      currentPlayer.isImpostor
+                        ? styles.roleLabelImpostor
+                        : styles.roleLabel
+                    }
+                  >
                     {currentPlayer.isImpostor ? "IMPOSTOR" : "CIVIL"}
                   </Text>
                   <Text style={styles.word}>{word}</Text>
@@ -250,6 +256,12 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   roleLabel: {
+    fontSize: 14,
+    fontWeight: "800" as const,
+    color: "#4ECDC4",
+    letterSpacing: 2,
+  },
+  roleLabelImpostor: {
     fontSize: 14,
     fontWeight: "800" as const,
     color: "#FF6B6B",

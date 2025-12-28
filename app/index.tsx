@@ -58,7 +58,6 @@ export default function MainMenuScreen() {
 
             <TouchableOpacity
               style={[styles.modeButton, styles.onlineButton]}
-              onPress={handleOnlineMode}
               activeOpacity={0.8}
             >
               <View style={styles.buttonContent}>
