@@ -15,8 +15,9 @@ import { useGame } from "@/contexts/GameContext";
 export default function ResultsScreen() {
   const router = useRouter();
   const { config, resetGame } = useGame();
-  const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
+  const sortedPlayers = config.players.sort((a, b) => b.votes - a.votes);
   const selectedPlayer = sortedPlayers[0];
+  console.log({ isImpostor: selectedPlayer.isImpostor });
   const checkedVoting = () => {
     const equals = sortedPlayers.every(
       (player) => player.votes === sortedPlayers[0].votes && player.votes !== 0
@@ -60,7 +61,7 @@ export default function ResultsScreen() {
 
   useEffect(() => {
     checkedVoting();
-  }, []);
+  }, [mostVoted]);
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />

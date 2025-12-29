@@ -23,8 +23,9 @@ export default function PreliminaryScreen() {
   const router = useRouter();
   const { config, resetGame, resetVoting, removePlayer } = useGame();
   const { id, isImpostor, equal } = useLocalSearchParams();
+  console.log({ isImpostor });
   const currentPlayerId = id && id;
-  const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
+  const sortedPlayers = config.players.sort((a, b) => b.votes - a.votes);
   const mostVoted = sortedPlayers.filter(({ id }) => id === currentPlayerId)[0];
   const impostor = parseInt(isImpostor as string);
   const civiliansWin = !impostor;
@@ -40,13 +41,13 @@ export default function PreliminaryScreen() {
     router.push("/");
   };
   const handleResumeGame = () => {
+    resetVoting();
     if (equals) {
       router.push("/voting");
     } else {
-      // removePlayer(`${currentPlayerId}`);
       router.push("/game");
+      // removePlayer(`${currentPlayerId}`);
     }
-    resetVoting();
   };
   return (
     <View style={styles.container}>

@@ -42,10 +42,14 @@ export const [GameProvider, useGame] = createContextHook(() => {
   }, []);
 
   const removePlayer = useCallback((id: string) => {
-    setConfig((prev) => ({
-      ...prev,
-      players: prev.players.filter((p) => p.id !== id),
-    }));
+    setConfig((prev) => {
+      const players = prev.players.filter((p) => p.id !== id);
+      console.log({ currentPlayers: players, id });
+      return {
+        ...prev,
+        players: prev.players.filter((p) => p.id !== id),
+      };
+    });
   }, []);
 
   const setTimerDuration = useCallback((duration: number) => {
