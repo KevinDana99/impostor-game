@@ -17,6 +17,7 @@ export default function GameScreen() {
   const router = useRouter();
   const { config, startVoting, timeRemaining, pulseAnim } = useGame();
 
+  console.log("pase por game");
   const handleVoting = () => {
     startVoting();
     router.push("/voting");

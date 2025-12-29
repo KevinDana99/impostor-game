@@ -152,6 +152,7 @@ export const [GameProvider, useGame] = createContextHook(() => {
   const handleResetTime = () => {
     setTimeRemaining(INITIAL_TIME_STATE);
   };
+
   useEffect(() => {
     const interval = setInterval(() => {
       setTimeRemaining((prev) => {
@@ -184,6 +185,7 @@ export const [GameProvider, useGame] = createContextHook(() => {
     pulse.start();
     return () => pulse.stop();
   }, [pulseAnim]);
+
   return {
     config,
     timeRemaining,

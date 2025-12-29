@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import {
   Trophy,
   XCircle,
@@ -22,15 +22,16 @@ import { useGame } from "@/contexts/GameContext";
 export default function PreliminaryScreen() {
   const router = useRouter();
   const { config, resetGame, resetVoting, removePlayer } = useGame();
-
+  const { id, isImpostor, equal } = useLocalSearchParams();
+  const currentPlayerId = id && id;
   const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
-  const mostVoted = sortedPlayers[0];
+  const mostVoted = sortedPlayers.filter(({ id }) => id === currentPlayerId)[0];
+  const impostor = parseInt(isImpostor as string);
+  const civiliansWin = !impostor;
+  const equals = equal;
 
-  const civiliansWin = true;
-  const equals = false;
-
+  console.log({ equal, id });
   const handlePlayAgain = () => {
-    //resetGame();
     router.push("/setup");
   };
 
@@ -39,15 +40,13 @@ export default function PreliminaryScreen() {
     router.push("/");
   };
   const handleResumeGame = () => {
-    resetVoting();
     if (equals) {
       router.push("/voting");
-      return;
     } else {
+      // removePlayer(`${currentPlayerId}`);
       router.push("/game");
-      //     removePlayer("");
-      return;
     }
+    resetVoting();
   };
   return (
     <View style={styles.container}>
@@ -69,29 +68,69 @@ export default function PreliminaryScreen() {
             ) : (
               <XCircle size={80} color="#FFF" strokeWidth={2.5} />
             )}
-            <Text style={styles.title}>{civiliansWin && "¡EMPATE!"}</Text>
+            <Text style={styles.title}>
+              {equals
+                ? "¡EMPATE!"
+                : mostVoted.isImpostor
+                ? "¡IMPOSTOR ELIMINADO!"
+                : "¡CIVIL ELIMINADO!"}
+            </Text>
             <Text style={styles.subtitle}>
-              {civiliansWin && "Todos los jugadores igualaron en votos"}
+              {equals
+                ? "Todos los jugadores igualaron en votos"
+                : mostVoted.isImpostor
+                ? "Han eliminado a un impostor"
+                : "Han eliminado a un civil, el impostor sigue entre ustedes"}
             </Text>
           </View>
-
+          <View style={styles.eliminatedSection}>
+            <Text style={styles.sectionTitle}>Jugador Eliminado</Text>
+            {mostVoted && (
+              <View style={styles.eliminatedCard}>
+                <View style={styles.eliminatedBadge}>
+                  <Crown size={32} color="#FFD700" fill="#FFD700" />
+                </View>
+                <View style={styles.eliminatedAvatar}>
+                  <Text style={styles.eliminatedAvatarText}>
+                    {mostVoted.name.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <Text style={styles.eliminatedName}>{mostVoted.name}</Text>
+                <View
+                  style={[
+                    styles.roleBadge,
+                    mostVoted.isImpostor
+                      ? styles.impostorBadge
+                      : styles.civilBadge,
+                  ]}
+                >
+                  <Text style={styles.roleBadgeText}>
+                    {mostVoted.isImpostor ? "IMPOSTOR" : "CIVIL"}
+                  </Text>
+                </View>
+                <Text style={styles.votesText}>{mostVoted.votes} votos</Text>
+              </View>
+            )}
+          </View>
           <View style={styles.votingSection}>
             <Text style={styles.sectionTitle}>Resultados de Votación</Text>
             <View style={styles.votesList}>
-              {sortedPlayers.map((player, index) => (
-                <View key={player.id} style={styles.voteCard}>
-                  <View style={styles.votePlayerInfo}>
-                    <Text style={styles.voteRank}>#{index + 1}</Text>
-                    <View style={styles.voteAvatar}>
-                      <Text style={styles.voteAvatarText}>
-                        {player.name.charAt(0).toUpperCase()}
-                      </Text>
+              {sortedPlayers.map((player, index) => {
+                return (
+                  <View key={player.id} style={styles.voteCard}>
+                    <View style={styles.votePlayerInfo}>
+                      <Text style={styles.voteRank}>#{index + 1}</Text>
+                      <View style={styles.voteAvatar}>
+                        <Text style={styles.voteAvatarText}>
+                          {player.name.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                      <Text style={styles.votePlayerName}>{player.name}</Text>
                     </View>
-                    <Text style={styles.votePlayerName}>{player.name}</Text>
+                    <Text style={styles.voteCount}>{player.votes}</Text>
                   </View>
-                  <Text style={styles.voteCount}>{player.votes}</Text>
-                </View>
-              ))}
+                );
+              })}
             </View>
           </View>
         </ScrollView>
@@ -203,6 +242,14 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "900" as const,
     color: "#FFF",
+  },
+  voteCardDisabled: {
+    backgroundColor: "rgba(255, 255, 255, 0.496)",
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   roleBadge: {
     paddingHorizontal: 20,
@@ -435,33 +482,5 @@ const styles = StyleSheet.create({
 });
 
 /*
-          <View style={styles.eliminatedSection}>
-            <Text style={styles.sectionTitle}>Jugador Eliminado</Text>
-            {mostVoted && (
-              <View style={styles.eliminatedCard}>
-                <View style={styles.eliminatedBadge}>
-                  <Crown size={32} color="#FFD700" fill="#FFD700" />
-                </View>
-                <View style={styles.eliminatedAvatar}>
-                  <Text style={styles.eliminatedAvatarText}>
-                    {mostVoted.name.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-                <Text style={styles.eliminatedName}>{mostVoted.name}</Text>
-                <View
-                  style={[
-                    styles.roleBadge,
-                    mostVoted.isImpostor
-                      ? styles.impostorBadge
-                      : styles.civilBadge,
-                  ]}
-                >
-                  <Text style={styles.roleBadgeText}>
-                    {mostVoted.isImpostor ? "IMPOSTOR" : "CIVIL"}
-                  </Text>
-                </View>
-                <Text style={styles.votesText}>{mostVoted.votes} votos</Text>
-              </View>
-            )}
-          </View>
+
 */

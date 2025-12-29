@@ -1,6 +1,6 @@
 import { useRouter } from "expo-router";
 import { Trophy, XCircle, Home, RotateCcw, Crown } from "lucide-react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,21 +15,37 @@ import { useGame } from "@/contexts/GameContext";
 export default function ResultsScreen() {
   const router = useRouter();
   const { config, resetGame } = useGame();
+  const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
+  const selectedPlayer = sortedPlayers[0];
   const checkedVoting = () => {
     const equals = sortedPlayers.every(
       (player) => player.votes === sortedPlayers[0].votes && player.votes !== 0
     );
-    console.log({ equals });
+    console.log({ equals }, "estas en results");
     if (equals) {
-      router.push("/preliminary");
+      router.push({
+        pathname: "/preliminary",
+        params: {
+          id: 999,
+          equal: 1,
+          isImpostor: 0,
+        },
+      });
       return;
     } else {
-      return sortedPlayers[0];
+      router.push({
+        pathname: "/preliminary",
+        params: {
+          id: selectedPlayer.id,
+          isImpostor: selectedPlayer.isImpostor ? 1 : 0,
+          equal: null,
+        },
+      });
+      return;
     }
   };
-  const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
-  const mostVoted = checkedVoting();
 
+  const mostVoted = selectedPlayer;
   const civiliansWon = mostVoted && mostVoted.isImpostor;
 
   const handlePlayAgain = () => {
@@ -42,6 +58,9 @@ export default function ResultsScreen() {
     router.push("/");
   };
 
+  useEffect(() => {
+    checkedVoting();
+  }, []);
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
