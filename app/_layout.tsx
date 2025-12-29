@@ -20,6 +20,7 @@ function RootLayoutNav() {
       <Stack.Screen name="game" />
       <Stack.Screen name="voting" />
       <Stack.Screen name="results" />
+      <Stack.Screen name="preliminary" />
     </Stack>
   );
 }

@@ -1,7 +1,9 @@
 import createContextHook from "@nkzw/create-context-hook";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { GameConfig, GameMode, Player } from "@/types/game";
 import { getRandomWordPair } from "@/constants/wordPairs";
+import { router } from "expo-router";
+import { Animated } from "react-native";
 
 const createPlayer = (name: string): Player => ({
   id: Math.random().toString(36).substr(2, 9),
@@ -23,6 +25,9 @@ export const [GameProvider, useGame] = createContextHook(() => {
     votedPlayers: new Set(),
     gameStartTime: null,
   });
+  const INITIAL_TIME_STATE = config.timerDuration * 60;
+  const [timeRemaining, setTimeRemaining] = useState(INITIAL_TIME_STATE);
+  const [pulseAnim] = useState(new Animated.Value(1));
 
   const setGameMode = useCallback((mode: GameMode) => {
     setConfig((prev) => ({ ...prev, mode }));
@@ -105,6 +110,10 @@ export const [GameProvider, useGame] = createContextHook(() => {
     }));
   }, []);
 
+  const handleResetVoting = () => {
+    startVoting();
+  };
+
   const castVote = useCallback((voterId: string, votedForId: string) => {
     setConfig((prev) => {
       const newVotedPlayers = new Set(prev.votedPlayers);
@@ -140,9 +149,47 @@ export const [GameProvider, useGame] = createContextHook(() => {
       gameStartTime: null,
     });
   }, []);
+  const handleResetTime = () => {
+    setTimeRemaining(INITIAL_TIME_STATE);
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 0) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const pulse = Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1000,
+          useNativeDriver: true,
+        }),
+      ])
+    );
+    pulse.start();
+    return () => pulse.stop();
+  }, [pulseAnim]);
   return {
     config,
+    timeRemaining,
+    pulseAnim,
+    handleResetTime,
+    resetVoting: handleResetVoting,
     setGameMode,
     addPlayer,
     removePlayer,

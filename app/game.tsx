@@ -15,44 +15,7 @@ import { useGame } from "@/contexts/GameContext";
 
 export default function GameScreen() {
   const router = useRouter();
-  const { config, startVoting } = useGame();
-  const [timeRemaining, setTimeRemaining] = useState(config.timerDuration * 60);
-  const [pulseAnim] = useState(new Animated.Value(1));
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          startVoting();
-          router.push("/voting");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [startVoting, router]);
-
-  useEffect(() => {
-    const pulse = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1000,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    pulse.start();
-    return () => pulse.stop();
-  }, [pulseAnim]);
+  const { config, startVoting, timeRemaining, pulseAnim } = useGame();
 
   const handleVoting = () => {
     startVoting();

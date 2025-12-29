@@ -1,5 +1,12 @@
 import { useRouter } from "expo-router";
-import { Trophy, XCircle, Home, RotateCcw, Crown } from "lucide-react-native";
+import {
+  Trophy,
+  XCircle,
+  Home,
+  RotateCcw,
+  Crown,
+  Play,
+} from "lucide-react-native";
 import React from "react";
 import {
   StyleSheet,
@@ -12,25 +19,15 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { useGame } from "@/contexts/GameContext";
 
-export default function ResultsScreen() {
+export default function PreliminaryScreen() {
   const router = useRouter();
-  const { config, resetGame } = useGame();
-  const checkedVoting = () => {
-    const equals = sortedPlayers.every(
-      (player) => player.votes === sortedPlayers[0].votes && player.votes !== 0
-    );
-    console.log({ equals });
-    if (equals) {
-      router.push("/preliminary");
-      return;
-    } else {
-      return sortedPlayers[0];
-    }
-  };
-  const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
-  const mostVoted = checkedVoting();
+  const { config, resetGame, resetVoting, removePlayer } = useGame();
 
-  const civiliansWon = mostVoted && mostVoted.isImpostor;
+  const sortedPlayers = [...config.players].sort((a, b) => b.votes - a.votes);
+  const mostVoted = sortedPlayers[0];
+
+  const civiliansWin = true;
+  const equals = false;
 
   const handlePlayAgain = () => {
     //resetGame();
@@ -41,12 +38,22 @@ export default function ResultsScreen() {
     resetGame();
     router.push("/");
   };
-
+  const handleResumeGame = () => {
+    resetVoting();
+    if (equals) {
+      router.push("/voting");
+      return;
+    } else {
+      router.push("/game");
+      //     removePlayer("");
+      return;
+    }
+  };
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <LinearGradient
-        colors={civiliansWon ? ["#4ECDC4", "#44A08D"] : ["#FF6B6B", "#EE5A6F"]}
+        colors={civiliansWin ? ["#4ECDC4", "#44A08D"] : ["#FF6B6B", "#EE5A6F"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={styles.gradient}
@@ -57,100 +64,15 @@ export default function ResultsScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.header}>
-            {civiliansWon ? (
+            {civiliansWin ? (
               <Trophy size={80} color="#FFF" strokeWidth={2.5} />
             ) : (
               <XCircle size={80} color="#FFF" strokeWidth={2.5} />
             )}
-            <Text style={styles.title}>
-              {civiliansWon ? "¡CIVILES GANARON!" : "¡IMPOSTORES GANARON!"}
-            </Text>
+            <Text style={styles.title}>{civiliansWin && "¡EMPATE!"}</Text>
             <Text style={styles.subtitle}>
-              {civiliansWon ? "Atraparon al impostor" : "El impostor escapó"}
+              {civiliansWin && "Todos los jugadores igualaron en votos"}
             </Text>
-          </View>
-
-          <View style={styles.eliminatedSection}>
-            <Text style={styles.sectionTitle}>Jugador Eliminado</Text>
-            {mostVoted && (
-              <View style={styles.eliminatedCard}>
-                <View style={styles.eliminatedBadge}>
-                  <Crown size={32} color="#FFD700" fill="#FFD700" />
-                </View>
-                <View style={styles.eliminatedAvatar}>
-                  <Text style={styles.eliminatedAvatarText}>
-                    {mostVoted.name.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-                <Text style={styles.eliminatedName}>{mostVoted.name}</Text>
-                <View
-                  style={[
-                    styles.roleBadge,
-                    mostVoted.isImpostor
-                      ? styles.impostorBadge
-                      : styles.civilBadge,
-                  ]}
-                >
-                  <Text style={styles.roleBadgeText}>
-                    {mostVoted.isImpostor ? "IMPOSTOR" : "CIVIL"}
-                  </Text>
-                </View>
-                <Text style={styles.votesText}>{mostVoted.votes} votos</Text>
-              </View>
-            )}
-          </View>
-
-          <View style={styles.wordSection}>
-            <Text style={styles.sectionTitle}>Las Palabras</Text>
-            <View style={styles.wordCards}>
-              <View style={styles.wordCard}>
-                <Text style={styles.wordLabel}>CIVILES</Text>
-                <Text style={styles.wordText}>
-                  {config.currentWordPair?.mainWord}
-                </Text>
-              </View>
-              <View style={styles.wordCard}>
-                <Text style={styles.wordLabel}>IMPOSTOR</Text>
-                <Text style={styles.wordText}>
-                  {config.currentWordPair?.impostorWord}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.rolesSection}>
-            <Text style={styles.sectionTitle}>Roles de Jugadores</Text>
-            <View style={styles.rolesList}>
-              {config.players.map((player) => (
-                <View key={player.id} style={styles.roleCard}>
-                  <View style={styles.rolePlayerInfo}>
-                    <View style={styles.roleAvatar}>
-                      <Text style={styles.roleAvatarText}>
-                        {player.name.charAt(0).toUpperCase()}
-                      </Text>
-                    </View>
-                    <Text style={styles.rolePlayerName}>{player.name}</Text>
-                  </View>
-                  <View
-                    style={[
-                      styles.roleTag,
-                      player.isImpostor ? styles.impostorTag : styles.civilTag,
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.roleTagText,
-                        player.isImpostor
-                          ? styles.impostorTagText
-                          : styles.civilTagText,
-                      ]}
-                    >
-                      {player.isImpostor ? "IMPOSTOR" : "CIVIL"}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </View>
           </View>
 
           <View style={styles.votingSection}>
@@ -175,7 +97,18 @@ export default function ResultsScreen() {
         </ScrollView>
 
         <View style={styles.buttonsContainer}>
-          <View style={styles.bottomSpacer} />
+          <View style={styles.containerResumeButton}>
+            <View style={styles.bottomSpacer} />
+          </View>
+          <TouchableOpacity
+            style={styles.playAgainButton}
+            onPress={handleResumeGame}
+            activeOpacity={0.8}
+          >
+            <Play size={24} color="#FFF" />
+            <Text style={styles.playAgainButtonText}>Volver a intentar</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             style={styles.playAgainButton}
             onPress={handlePlayAgain}
@@ -470,4 +403,65 @@ const styles = StyleSheet.create({
   bottomSpacer: {
     height: 40,
   },
+  containerResumeButton: {
+    position: "fixed",
+    bottom: 40,
+    padding: 24,
+  },
+  resumeButton: {
+    position: "relative",
+    backgroundColor: "#4ECDC4",
+    borderRadius: 20,
+    paddingVertical: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+  },
+  resumeButtonDisabled: {
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  resumeButtonText: {
+    fontSize: 22,
+    fontWeight: "800" as const,
+    color: "#FFF",
+  },
 });
+
+/*
+          <View style={styles.eliminatedSection}>
+            <Text style={styles.sectionTitle}>Jugador Eliminado</Text>
+            {mostVoted && (
+              <View style={styles.eliminatedCard}>
+                <View style={styles.eliminatedBadge}>
+                  <Crown size={32} color="#FFD700" fill="#FFD700" />
+                </View>
+                <View style={styles.eliminatedAvatar}>
+                  <Text style={styles.eliminatedAvatarText}>
+                    {mostVoted.name.charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <Text style={styles.eliminatedName}>{mostVoted.name}</Text>
+                <View
+                  style={[
+                    styles.roleBadge,
+                    mostVoted.isImpostor
+                      ? styles.impostorBadge
+                      : styles.civilBadge,
+                  ]}
+                >
+                  <Text style={styles.roleBadgeText}>
+                    {mostVoted.isImpostor ? "IMPOSTOR" : "CIVIL"}
+                  </Text>
+                </View>
+                <Text style={styles.votesText}>{mostVoted.votes} votos</Text>
+              </View>
+            )}
+          </View>
+*/

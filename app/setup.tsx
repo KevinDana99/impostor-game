@@ -179,36 +179,6 @@ export default function SetupScreen() {
             <View style={styles.section}>
               <View style={styles.sectionHeader}>
                 <Target size={24} color="#FFF" />
-                <Text style={styles.sectionTitle}>Número de rondas</Text>
-              </View>
-              <View style={styles.optionsRow}>
-                {impostorOptions.map((count) => (
-                  <TouchableOpacity
-                    key={count}
-                    style={[
-                      styles.optionButton,
-                      config.impostorCount === count &&
-                        styles.optionButtonActive,
-                    ]}
-                    onPress={() => setImpostorCount(count)}
-                    activeOpacity={0.7}
-                  >
-                    <Text
-                      style={[
-                        styles.optionText,
-                        config.impostorCount === count &&
-                          styles.optionTextActive,
-                      ]}
-                    >
-                      {count}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Target size={24} color="#FFF" />
                 <Text style={styles.sectionTitle}>Número de impostores</Text>
               </View>
               <View style={styles.optionsRow}>

@@ -14,7 +14,7 @@ import { useGame } from "@/contexts/GameContext";
 
 export default function WordRevealScreen() {
   const router = useRouter();
-  const { config, nextPlayer } = useGame();
+  const { config, nextPlayer, handleResetTime } = useGame();
   const [isRevealed, setIsRevealed] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
 
@@ -39,6 +39,7 @@ export default function WordRevealScreen() {
     fadeAnim.setValue(0);
     if (isLastPlayer) {
       nextPlayer();
+      handleResetTime();
       router.push("/game");
     } else {
       nextPlayer();
