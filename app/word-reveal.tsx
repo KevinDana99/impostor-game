@@ -11,10 +11,12 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useGame } from "@/contexts/GameContext";
+import { useTimer } from "@/contexts/TimerContext";
 
 export default function WordRevealScreen() {
   const router = useRouter();
-  const { config, nextPlayer, handleResetTime } = useGame();
+  const { config, nextPlayer } = useGame();
+  const { handleResetTime } = useTimer();
   const [isRevealed, setIsRevealed] = useState(false);
   const [fadeAnim] = useState(new Animated.Value(0));
 

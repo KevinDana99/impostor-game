@@ -12,26 +12,17 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useGame } from "@/contexts/GameContext";
+import Timer from "@/components/Timer";
+import { useTimer } from "@/contexts/TimerContext";
 
 export default function GameScreen() {
   const router = useRouter();
-  const { config, startVoting, timeRemaining, pulseAnim } = useGame();
-
-  console.log("pase por game");
+  const { config, startVoting } = useGame();
+  const { isWarning } = useTimer();
   const handleVoting = () => {
     startVoting();
     router.push("/voting");
   };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const progress = timeRemaining / (config.timerDuration * 60);
-  const isWarning = timeRemaining < 60;
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -48,33 +39,7 @@ export default function GameScreen() {
               Hablen entre ustedes y descubran al impostor
             </Text>
           </View>
-
-          <View style={styles.timerSection}>
-            <Animated.View
-              style={[
-                styles.timerCircle,
-                {
-                  transform: [{ scale: isWarning ? pulseAnim : 1 }],
-                },
-              ]}
-            >
-              <Text style={styles.timerText}>{formatTime(timeRemaining)}</Text>
-              <Text style={styles.timerLabel}>restante</Text>
-            </Animated.View>
-
-            <View style={styles.progressBarContainer}>
-              <View
-                style={[
-                  styles.progressBar,
-                  {
-                    width: `${progress * 100}%`,
-                    backgroundColor: isWarning ? "#FF6B6B" : "#4ECDC4",
-                  },
-                ]}
-              />
-            </View>
-          </View>
-
+          <Timer />
           <View style={styles.infoSection}>
             <View style={styles.infoCard}>
               <UsersIcon size={32} color="#FFF" />
@@ -158,43 +123,7 @@ const styles = StyleSheet.create({
     color: "rgba(255, 255, 255, 0.8)",
     textAlign: "center",
   },
-  timerSection: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-  timerCircle: {
-    width: 180,
-    height: 180,
-    borderRadius: 90,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 8,
-    borderColor: "#FFF",
-    marginBottom: 24,
-  },
-  timerText: {
-    fontSize: 56,
-    fontWeight: "900" as const,
-    color: "#FFF",
-  },
-  timerLabel: {
-    fontSize: 14,
-    fontWeight: "600" as const,
-    color: "rgba(255, 255, 255, 0.8)",
-    marginTop: 4,
-  },
-  progressBarContainer: {
-    width: "100%",
-    height: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 4,
-    overflow: "hidden",
-  },
-  progressBar: {
-    height: "100%",
-    borderRadius: 4,
-  },
+
   infoSection: {
     flexDirection: "row",
     gap: 12,
